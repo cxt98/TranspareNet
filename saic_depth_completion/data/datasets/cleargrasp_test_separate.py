@@ -7,6 +7,7 @@ from PIL import Image
 import OpenEXR
 import Imath
 import glob
+from skimage.transform import resize
 
 ROOT = "/h/helen/datasets/cleargrasp"
 
@@ -47,7 +48,6 @@ def exr_loader(EXR_PATH, ndim=3):
         channel = np.frombuffer(exr_file.channel('R', pt), dtype=np.float32)
         channel.shape = (size[1], size[0])  # Numpy arrays are (row, col)
         exr_arr = np.array(channel)
-        # print('max_pixel', np.amax(exr_arr))
         return exr_arr
 
 def png_loader(path_to_png):

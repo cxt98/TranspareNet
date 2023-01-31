@@ -42,13 +42,16 @@ __C.DATASETS.FRANKASCAN.PARTIAL_POINTS_PATH      = './datasets/frankascanv2/%s/%
 __C.DATASETS.FRANKASCAN.COMPLETE_POINTS_PATH     = './datasets/frankascanv2/%s/%s/Ground_Truth_recenter_%s.pcd'
 __C.DATASETS.FRANKASCAN.PREDICTION_PATH          = './datasets/frankascanv2/test/%s/depth2pcd_pred_%s.pcd'
 
+__C.DATASETS.CLEARPOSE                           = edict()
+__C.DATASETS.CLEARPOSE.POINTS_DIR_PATH           = '/media/cxt/6358C6357FEBD1E6/clearpose_downsample_100/'
+
 #
 # Dataset
 #
 __C.DATASET                                      = edict()
-# Dataset Options: Completion3D, ShapeNet, ShapeNetCars, KITTI, ClearGrasp, FrankaScan
-__C.DATASET.TRAIN_DATASET                        = 'FrankaScan'
-__C.DATASET.TEST_DATASET                         = 'FrankaScan'
+# Dataset Options: Completion3D, ShapeNet, ShapeNetCars, KITTI, ClearGrasp, FrankaScan, ClearPose
+__C.DATASET.TRAIN_DATASET                        = 'ClearPose'
+__C.DATASET.TEST_DATASET                         = 'ClearPose'
 
 #
 # Constants
@@ -86,8 +89,8 @@ __C.NETWORK.GRIDDING_LOSS_ALPHAS                 = [0.1]
 # Train
 #
 __C.TRAIN                                        = edict()
-__C.TRAIN.BATCH_SIZE                             = 32
-__C.TRAIN.N_EPOCHS                               = 500
+__C.TRAIN.BATCH_SIZE                             = 1
+__C.TRAIN.N_EPOCHS                               = 20
 __C.TRAIN.SAVE_FREQ                              = 10
 __C.TRAIN.LEARNING_RATE                          = 1e-4
 __C.TRAIN.LR_MILESTONES                          = [50]

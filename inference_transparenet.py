@@ -9,6 +9,8 @@ import torch
 
 import argparse
 from saic_depth_completion.data.datasets.franka_scan import FrankaScan
+from saic_depth_completion.data.datasets.cleargrasp_test_separate import ClearGrasp
+from saic_depth_completion.data.datasets.clearpose import ClearPose
 from saic_depth_completion.engine.inference import inference
 from saic_depth_completion.utils.logger import setup_logger
 from saic_depth_completion.utils.snapshoter import Snapshoter
@@ -52,7 +54,10 @@ def main():
         'rel': DepthRel(),
     }
 
-    test_datasets = {"val_frankascanv2": FrankaScan(split='val', processed = True, model_segment=False, pcc_trans10k = False, remove_tag = False),}
+    test_datasets = {
+        # "val_frankascanv2": FrankaScan(split='val', processed = True, model_segment=False, pcc_trans10k = False, remove_tag = False),
+        "test_clearpose": ClearPose(split='test', processed = False)
+        }
     test_loaders = {
         k: torch.utils.data.DataLoader(
             dataset=v,
@@ -82,9 +87,10 @@ def main():
     pccModel.load_state_dict(checkpoint['grnet'])
     pccModel.eval()
 
-    K = np.array([[613.96246338,            0, 324.44714355],
-              [           0, 613.75634766, 239.17121887],
-              [           0,            0,            1]])
+    K = np.array([
+        [601.3, 0, 334.7],
+        [0, 601.3, 248.0],
+        [0, 0, 1]])
     pccPred = partial(inference_pcc, pccModel, cfg.CONST.N_INPUT_POINTS, K)
     
     inference(

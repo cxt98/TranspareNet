@@ -21,12 +21,12 @@ matplotlib.use('Agg')
 # Fix deadlock in DataLoader
 cv2.setNumThreads(0)
 
-from pprint import pprint
+# from pprint import pprint
 
 from configs.grnet.config import cfg
-from grnet_point_cloud_completion.core import train_net
-from grnet_point_cloud_completion.core import test_net
-from grnet_point_cloud_completion.core import inference_net
+from grnet_point_cloud_completion.core.train import train_net
+from grnet_point_cloud_completion.core.test import test_net
+from grnet_point_cloud_completion.core.inference import inference_net
 
 
 def get_args_from_command_line():
@@ -53,7 +53,8 @@ def main():
 
     # Print config
     print('Use config:')
-    pprint(cfg)
+    # pprint(cfg)
+    print(cfg)
 
     # Set GPU to use
     os.environ["CUDA_VISIBLE_DEVICES"] = cfg.CONST.DEVICE

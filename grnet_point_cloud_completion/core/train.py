@@ -19,7 +19,7 @@ from grnet_point_cloud_completion.extensions.chamfer_dist import ChamferDistance
 from grnet_point_cloud_completion.extensions.gridding_loss import GriddingLoss
 from grnet_point_cloud_completion.models.grnet import GRNet
 from grnet_point_cloud_completion.utils.average_meter import AverageMeter
-
+from grnet_point_cloud_completion.utils.helpers import init_weights, var_or_cuda, count_parameters
 import json
 import os
 
@@ -90,8 +90,8 @@ def train_net(cfg):
 
     # Create the networks
     grnet = GRNet(cfg)
-    grnet.apply(grnet_point_cloud_completion.utils.helpers.init_weights)
-    logging.debug('Parameters in GRNet: %d.' % grnet_point_cloud_completion.utils.helpers.count_parameters(grnet))
+    grnet.apply(init_weights)
+    logging.debug('Parameters in GRNet: %d.' % count_parameters(grnet))
 
     # Move the network to GPU if possible
     if torch.cuda.is_available():
@@ -140,7 +140,7 @@ def train_net(cfg):
             try:
                 data_time.update(time() - batch_end_time)
                 for k, v in data.items():
-                    data[k] = grnet_point_cloud_completion.utils.helpers.var_or_cuda(v)
+                    data[k] = var_or_cuda(v)
                 sparse_ptcloud, dense_ptcloud = grnet(data)
             except Exception as e:
 
