@@ -39,6 +39,7 @@ def test_net(cfg, epoch_idx=-1, test_data_loader=None, test_writer=None, grnet=N
 
         if torch.cuda.is_available():
             grnet = torch.nn.DataParallel(grnet).cuda()
+            # grnet = grnet.cuda()
 
         logging.info('Recovering from %s ...' % (cfg.CONST.WEIGHTS))
         checkpoint = torch.load(cfg.CONST.WEIGHTS)
@@ -64,7 +65,7 @@ def test_net(cfg, epoch_idx=-1, test_data_loader=None, test_writer=None, grnet=N
         if model_idx < -1:
             continue
         try:
-            taxonomy_id = taxonomy_id[0] if isinstance(taxonomy_id[0], str) else taxonomy_id[0].item()
+            taxonomy_id = taxonomy_id[0] if isinstance(taxonomy_id[0], str) else taxonomy_id[0]
             model_id = model_id[0]
             with torch.no_grad():
                 for k, v in data.items():

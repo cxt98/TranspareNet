@@ -66,7 +66,7 @@ def train_net(cfg):
                                                     num_workers=cfg.CONST.NUM_WORKERS,
                                                     collate_fn=grnet_point_cloud_completion.utils.data_loaders.collate_fn,
                                                     pin_memory=True,
-                                                    shuffle=True,
+                                                    shuffle=False,
                                                     drop_last=True)
     print('test_dataset_loader')
     val_data_loader = torch.utils.data.DataLoader(dataset=test_dataset_loader.get_dataset(
@@ -96,6 +96,7 @@ def train_net(cfg):
     # Move the network to GPU if possible
     if torch.cuda.is_available():
         grnet = torch.nn.DataParallel(grnet).cuda()
+        # grnet = grnet.cuda()
 
     # Create the optimizers
     grnet_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, grnet.parameters()),
@@ -144,11 +145,14 @@ def train_net(cfg):
                 sparse_ptcloud, dense_ptcloud = grnet(data)
             except Exception as e:
 
-                i = int(str(e))
-                print(model_ids[i])
-                shutil.move(f'datasets/frankascanv2/train/{model_ids[i].split("-")[0]}', 'datasets/frankascanv2/error')
-                createjson()
+                print("Inference error")
                 exit(0)
+
+                # i = int(str(e))
+                # print(model_ids[i])
+                # shutil.move(f'datasets/frankascanv2/train/{model_ids[i].split("-")[0]}', 'datasets/frankascanv2/error')
+                # createjson()
+                # exit(0)
             sparse_loss = chamfer_dist(sparse_ptcloud, data['gtcloud'])
             dense_loss = chamfer_dist(dense_ptcloud, data['gtcloud'])
             _loss = sparse_loss + dense_loss
@@ -180,7 +184,7 @@ def train_net(cfg):
             (epoch_idx, cfg.TRAIN.N_EPOCHS, epoch_end_time - epoch_start_time, ['%.4f' % l for l in losses.avg()]))
 
         # Validate the current model
-        metrics = test_net(cfg, epoch_idx, val_data_loader, val_writer, grnet)
+        metrics = test_net(cfg, epoch_idx, val_data_loader, None, grnet)
 
         # Save ckeckpoints
         if epoch_idx % cfg.TRAIN.SAVE_FREQ == 0 or metrics.better_than(best_metrics):
