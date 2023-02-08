@@ -71,7 +71,7 @@ def main(processed = False):
     )
     args = parser.parse_args()
 
-    cfg = get_default_config(args.default_cfg)
+    cfg = get_default_config(args.default_cfg) # seems read from this file: saic_depth_completion/config/dm_lrn.py
 
     print('cwd: ', os.getcwd())
     #cfg.merge_from_file(os.path.join(os.getcwd(),args.config_file))
@@ -166,7 +166,7 @@ def main(processed = False):
         val_loaders=val_loaders,
         optimizer=optimizer,
         snapshoter=snapshoter,
-        epochs=20, #TODO: add into config
+        epochs=10, #TODO: add into config
         init_epoch=init_epoch,
         logger=logger,
         metrics=metrics,

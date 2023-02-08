@@ -91,7 +91,7 @@ def train_net(cfg):
     # Create the networks
     grnet = GRNet(cfg)
     grnet.apply(init_weights)
-    logging.debug('Parameters in GRNet: %d.' % count_parameters(grnet))
+    # logging.debug('Parameters in GRNet: %d.' % count_parameters(grnet))
 
     # Move the network to GPU if possible
     if torch.cuda.is_available():
@@ -146,33 +146,38 @@ def train_net(cfg):
             except Exception as e:
 
                 print("Inference error")
-                exit(0)
+                # continue
+                # exit(0)
 
                 # i = int(str(e))
                 # print(model_ids[i])
                 # shutil.move(f'datasets/frankascanv2/train/{model_ids[i].split("-")[0]}', 'datasets/frankascanv2/error')
                 # createjson()
                 # exit(0)
-            sparse_loss = chamfer_dist(sparse_ptcloud, data['gtcloud'])
-            dense_loss = chamfer_dist(dense_ptcloud, data['gtcloud'])
-            _loss = sparse_loss + dense_loss
-            losses.update([sparse_loss.item() * 1000, dense_loss.item() * 1000])
+            # sparse_loss = chamfer_dist(sparse_ptcloud, data['gtcloud'])
+            # dense_loss = chamfer_dist(dense_ptcloud, data['gtcloud'])
+            # _loss = sparse_loss + dense_loss
+            # losses.update([sparse_loss.item() * 1000, dense_loss.item() * 1000])
 
-            grnet.zero_grad()
-            _loss.backward()
-            grnet_optimizer.step()
+            # grnet.zero_grad()
+            # _loss.backward()
+            # grnet_optimizer.step()
 
-            n_itr = (epoch_idx - 1) * n_batches + batch_idx
-            train_writer.add_scalar('Loss/Batch/Sparse', sparse_loss.item() * 1000, n_itr)
-            train_writer.add_scalar('Loss/Batch/Dense', dense_loss.item() * 1000, n_itr)
+            # n_itr = (epoch_idx - 1) * n_batches + batch_idx
+            # train_writer.add_scalar('Loss/Batch/Sparse', sparse_loss.item() * 1000, n_itr)
+            # train_writer.add_scalar('Loss/Batch/Dense', dense_loss.item() * 1000, n_itr)
 
-            batch_time.update(time() - batch_end_time)
-            batch_end_time = time()
-            logging.info('[Epoch %d/%d][Batch %d/%d] BatchTime = %.3f (s) DataTime = %.3f (s) Losses = %s' %
+            # batch_time.update(time() - batch_end_time)
+            # batch_end_time = time()
+            # logging.info('[Epoch %d/%d][Batch %d/%d] BatchTime = %.3f (s) DataTime = %.3f (s) Losses = %s' %
+            #              (
+            #                  epoch_idx, cfg.TRAIN.N_EPOCHS, batch_idx + 1, n_batches, batch_time.val(),
+            #                  data_time.val(),
+            #                  ['%.4f' % l for l in losses.val()]))
+            logging.info('[Epoch %d/%d][Batch %d/%d] BatchTime = %.3f (s) DataTime = %.3f (s) ' %
                          (
                              epoch_idx, cfg.TRAIN.N_EPOCHS, batch_idx + 1, n_batches, batch_time.val(),
-                             data_time.val(),
-                             ['%.4f' % l for l in losses.val()]))
+                             data_time.val()))
 
 
         grnet_lr_scheduler.step()
@@ -183,22 +188,22 @@ def train_net(cfg):
             '[Epoch %d/%d] EpochTime = %.3f (s) Losses = %s' %
             (epoch_idx, cfg.TRAIN.N_EPOCHS, epoch_end_time - epoch_start_time, ['%.4f' % l for l in losses.avg()]))
 
-        # Validate the current model
-        metrics = test_net(cfg, epoch_idx, val_data_loader, None, grnet)
+        # # Validate the current model
+        # metrics = test_net(cfg, epoch_idx, val_data_loader, None, grnet)
 
-        # Save ckeckpoints
-        if epoch_idx % cfg.TRAIN.SAVE_FREQ == 0 or metrics.better_than(best_metrics):
-            file_name = 'ckpt-best.pth' if metrics.better_than(best_metrics) else 'ckpt-epoch-%03d.pth' % epoch_idx
-            output_path = os.path.join(cfg.DIR.CHECKPOINTS, file_name)
-            torch.save({
-                'epoch_index': epoch_idx,
-                'best_metrics': metrics.state_dict(),
-                'grnet': grnet.state_dict()
-            }, output_path)  # yapf: disable
+        # # Save ckeckpoints
+        # if epoch_idx % cfg.TRAIN.SAVE_FREQ == 0 or metrics.better_than(best_metrics):
+        #     file_name = 'ckpt-best.pth' if metrics.better_than(best_metrics) else 'ckpt-epoch-%03d.pth' % epoch_idx
+        #     output_path = os.path.join(cfg.DIR.CHECKPOINTS, file_name)
+        #     torch.save({
+        #         'epoch_index': epoch_idx,
+        #         'best_metrics': metrics.state_dict(),
+        #         'grnet': grnet.state_dict()
+        #     }, output_path)  # yapf: disable
 
-            logging.info('Saved checkpoint to %s ...' % output_path)
-            if metrics.better_than(best_metrics):
-                best_metrics = metrics
+        #     logging.info('Saved checkpoint to %s ...' % output_path)
+        #     if metrics.better_than(best_metrics):
+        #         best_metrics = metrics
 
     train_writer.close()
     val_writer.close()

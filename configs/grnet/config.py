@@ -43,7 +43,7 @@ __C.DATASETS.FRANKASCAN.COMPLETE_POINTS_PATH     = './datasets/frankascanv2/%s/%
 __C.DATASETS.FRANKASCAN.PREDICTION_PATH          = './datasets/frankascanv2/test/%s/depth2pcd_pred_%s.pcd'
 
 __C.DATASETS.CLEARPOSE                           = edict()
-__C.DATASETS.CLEARPOSE.POINTS_DIR_PATH           = '/media/cxt/6358C6357FEBD1E6/clearpose_downsample_100/'
+__C.DATASETS.CLEARPOSE.POINTS_DIR_PATH           = '/media/cxt/6358C6357FEBD1E6/clearpose_dataset/'
 
 #
 # Dataset
@@ -58,7 +58,7 @@ __C.DATASET.TEST_DATASET                         = 'ClearPose'
 #
 __C.CONST                                        = edict()
 __C.CONST.DEVICE                                 = '0'
-__C.CONST.NUM_WORKERS                            = 32
+__C.CONST.NUM_WORKERS                            = 4
 __C.CONST.N_INPUT_POINTS                         = 2048
 __C.CONST.BIG_N_INPUT_POINTS                     = 16384
 
@@ -89,7 +89,7 @@ __C.NETWORK.GRIDDING_LOSS_ALPHAS                 = [0.1]
 # Train
 #
 __C.TRAIN                                        = edict()
-__C.TRAIN.BATCH_SIZE                             = 1
+__C.TRAIN.BATCH_SIZE                             = 8
 __C.TRAIN.N_EPOCHS                               = 20
 __C.TRAIN.SAVE_FREQ                              = 10
 __C.TRAIN.LEARNING_RATE                          = 1e-4

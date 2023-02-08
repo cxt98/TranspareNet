@@ -5,19 +5,17 @@ matplotlib
 numpy
 open3d
 opencv-python
-# pprint
 pyexr
 scipy
 tensorboardX==1.2
-torch>=1.4.0
+torch==1.4.0
 transforms3d
 tqdm
-torchvision>=0.5.0
+torchvision==0.5.0
 yacs
 scikit-image
 Pillow
 pyyaml
-# tqdm
 efficientnet_pytorch
 colorlog
 tensorboard

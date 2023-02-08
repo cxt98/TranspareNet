@@ -4,14 +4,14 @@ import torch
 import numpy as np
 np.random.seed(0)
 from PIL import Image
-import OpenEXR
+# import OpenEXR
 import Imath
 import glob
 from skimage.transform import resize
 import cv2
 
 #TODO: change this into config params
-ROOT = "/media/cxt/6358C6357FEBD1E6/clearpose_downsample_100"
+ROOT = "/media/cxt/6358C6357FEBD1E6/clearpose_dataset"
 
 
 
