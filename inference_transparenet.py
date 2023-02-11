@@ -72,26 +72,32 @@ def main():
 
     if args.gpu_id is not None:
         cfg.CONST.DEVICE = args.gpu_id
-    if args.pccweights is not None:
+    if args.pccweights != 'None':
         cfg.CONST.WEIGHTS = args.pccweights
+        direct_dcc = False
+    else:
+        direct_dcc = True
     if args.save_pred is not None:
         cfg.TEST.SAVE_PRED = args.save_pred
     
-    os.environ["CUDA_VISIBLE_DEVICES"] = cfg.CONST.DEVICE
-    torch.backends.cudnn.benchmark = True
-    pccModel = GRNet(cfg)
-    if torch.cuda.is_available():
-        pccModel = torch.nn.DataParallel(pccModel).cuda()
-    print(cfg.CONST.WEIGHTS)
-    checkpoint = torch.load(cfg.CONST.WEIGHTS)
-    pccModel.load_state_dict(checkpoint['grnet'])
-    pccModel.eval()
+    if not direct_dcc:
+        os.environ["CUDA_VISIBLE_DEVICES"] = cfg.CONST.DEVICE
+        torch.backends.cudnn.benchmark = True
+        pccModel = GRNet(cfg)
+        if torch.cuda.is_available():
+            pccModel = torch.nn.DataParallel(pccModel).cuda()
+        print(cfg.CONST.WEIGHTS)
+        checkpoint = torch.load(cfg.CONST.WEIGHTS)
+        pccModel.load_state_dict(checkpoint['grnet'])
+        pccModel.eval()
 
-    K = np.array([
-        [601.3, 0, 334.7],
-        [0, 601.3, 248.0],
-        [0, 0, 1]])
-    pccPred = partial(inference_pcc, pccModel, cfg.CONST.N_INPUT_POINTS, K)
+        K = np.array([
+            [601.3, 0, 334.7],
+            [0, 601.3, 248.0],
+            [0, 0, 1]])
+        pccPred = partial(inference_pcc, pccModel, cfg.CONST.N_INPUT_POINTS, K)
+    else:
+        pccPred = None
     
     inference(
         dccModel,

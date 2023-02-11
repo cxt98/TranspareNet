@@ -3,6 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import json
 import pyexr
+import cv2
 
 from grnet_point_cloud_completion.utils.io import IO
 from shutil import copy
@@ -45,9 +46,14 @@ def project_to_image(k, point_cloud, round_px=True):
 def pcd2imgHelper(mask, depth, k, pcds, maxdis, centers):
     if len(mask.shape) == 3:
         mask = mask[:,:, 2]
+    # mask = cv2.resize(mask, (640, 480), interpolation=cv2.INTER_LINEAR) # depth completion dataloader resize to (240, 320) which doesn't fit point cloud completion
+    # u, v = np.meshgrid(np.array(range(h)), np.array(range(w)))
+    # xyz = np.einsum('ij,jlk->ilk', np.linalg.inv(Kmat), np.stack((u, v, np.ones_like(u)))) * depthimg * depth_factor
     mask_bg = np.array(mask == 0, dtype=np.float32)
     mask_out = np.zeros_like(mask_bg)
-    mask_vals = np.unique(mask)[1:]
+    mask_binary = np.zeros_like(mask)
+    mask_binary[mask != 0] = 1
+    mask_vals = np.unique(mask_binary)[1:]
     depth_in = depth
     depth_out = depth_in * 0
     for i in range(len(mask_vals)):
@@ -55,6 +61,7 @@ def pcd2imgHelper(mask, depth, k, pcds, maxdis, centers):
         pcd_i *= maxdis[i] * 1.01
         pcd_i += centers[i]
         depth_i = project_to_image(k, pcd_i)
+        depth_i = depth_i[1::2, 1::2] # reshape to (320, 240) to match mask and depth input
         mask_i = np.array(mask == mask_vals[i], dtype=np.float32)
         mask_out += mask_i
         depth_out += depth_i * mask_i

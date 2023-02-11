@@ -146,19 +146,22 @@ def img2pcdHelper(mask, depth, inv_k):
     if len(mask.shape) == 3:
         mask = mask[:, :, 2]
     # Separate multiple objects into multiple point clouds
-    mask_vals = np.unique(mask)[1:]  # each object is indicated by a distinct value in RED channel
+    mask_binary = np.zeros_like(mask)
+    mask_binary[mask != 0] = 1
+    # mask[mask != 0] = 1 # seems after scikit-image resize() the binary mask becomes 0 and floats around 1/255
+    mask_vals = np.unique(mask_binary)[1:]  # each object is indicated by a distinct value in RED channel
     maxdis = [0]
     pcds = []
     centers = []
     for i in range(len(mask_vals)):
-        mask_i = np.array(mask == mask_vals[i], dtype=np.float32)
+        mask_i = np.array(mask_binary == mask_vals[i], dtype=np.float32)
 
         mask_pcd = deproject(mask_i, inv_k).sum(axis=1) > 0
         transp_depth = depth
         transp_pcd = deproject(transp_depth, inv_k)[mask_pcd]
         center = transp_pcd.mean(axis=0)
         centers.append(center)
-        transp_depth[transp_depth > 1] = 1
+        # transp_depth[transp_depth > 1] = 1 # TODO: what does this mean ??? seems not needed with line 165
         transp_pcd -= center
         maxdis.append(np.max(np.abs(transp_pcd)))
         transp_pcd /= maxdis[-1] * 1.01

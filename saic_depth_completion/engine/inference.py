@@ -4,7 +4,7 @@ import datetime
 import torch
 import torch.nn.functional as nnf
 from tqdm import tqdm
-
+import cv2
 import matplotlib.pyplot as plt
 
 from saic_depth_completion.utils.meter import AggregatedMeter
@@ -112,12 +112,12 @@ def inference(
                                     post_pred[it], close=True
                                 )
                                 data_folder_path, rgb_name = os.path.split(file_name)
-                                exr_saver(EXR_PATH = os.path.join(data_folder_path,f'{prefix}_depth.exr'), ndarr = post_pred[it].detach().cpu()[0].numpy(), ndim=1)
-                                fig.savefig(
-                                    os.path.join(data_folder_path,f'{prefix}_result_compare.png'), dpi=fig.dpi
-                                )
-                                path_save = os.path.join(data_folder_path,f'{prefix}_result_compare.png')
-                                print(f'saving fig to {path_save}')
+                                # exr_saver(EXR_PATH = os.path.join(data_folder_path,f'{prefix}_depth.exr'), ndarr = post_pred[it].detach().cpu()[0].numpy(), ndim=1)
+
+                                path_save = save_dir + file_name.split('/')[-3] + file_name.split('/')[-2] + file_name.split('/')[-1][:6] + f'{prefix}_result_compare.png'
+                                fig.savefig(path_save, dpi=fig.dpi)
+                                cv2.imwrite(path_save.replace('_result_compare.png', '_result_depth.png'), (post_pred[it].detach().cpu()[0].numpy()*1000).astype(np.uint16)) # TODO: change file name format
+                                # print(f'saving fig to {path_save}')
                                 #idx += 1
                     else:
                         if visualize_pics:
@@ -146,7 +146,7 @@ def inference(
                 # print(batch['gt_depth'])
                 mask_valid_region = (batch['gt_depth'] > 0.01).byte()
                 try:
-                    mask_seg = (nnf.interpolate(batch["gt_mask"], size=(144,256)) <=0.01).byte()
+                    mask_seg = (nnf.interpolate(batch["mask"], size=(144,256)) <=0.01).byte()
                 except:
                     raise ValueError('no gt_mask attribute')
                 # print('mask valid region', torch.sum(mask_valid_region))

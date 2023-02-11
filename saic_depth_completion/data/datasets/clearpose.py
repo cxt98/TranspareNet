@@ -47,7 +47,7 @@ class ClearPose:
         for set_scene in self.set_scenes:
             path = f'{self.data_root}/set{set_scene[0]}/scene{set_scene[1]}/'
             # collect transparent rgb, mask, depth paths
-            cur_image_paths = sorted(glob.glob(os.path.join(path, '*-color.png')) )
+            cur_image_paths = sorted(glob.glob(os.path.join(path, '*-color.png')) )[::1000]
             cur_mask_paths = [p.replace('-color.png', '-label.png') for p in cur_image_paths]
             cur_transparent_depth_paths = [p.replace('-color.png', '-depth.png') for p in cur_image_paths]
             cur_opaque_depth_paths = [p.replace('-color.png', '-depth_true.png') for p in cur_image_paths]
@@ -73,7 +73,7 @@ class ClearPose:
         # Load the mask
         # mask = png_loader(self.mask_name[index])
         mask = cv2.imread(self.mask_name[index], -1)
-        mask[mask != 0] = 1
+        mask[mask != 0] = 1 # TODO: seems need to be 255 
 
         # if self.depth_name[index].endswith('depth-rectified.exr'):
         #     # Remove the portion of the depth image with transparent object

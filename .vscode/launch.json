@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: train depth completion",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/cxt/trecs/TranspareNet/train_clearpose.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}",
+            "env": {"CUDA_LAUNCH_BLOCKING": "1"},
+            "args": [
+                "--config_file", "configs/dm_lrn/DM-LRN_efficientnet-b4_pepper.yaml"
+            ]
+        },
+        {
+            "name": "Python: train point cloud completion",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/cxt/trecs/TranspareNet/pccRunner.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Python: inference (KITTI pretrained)",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/cxt/trecs/TranspareNet/inference_transparenet.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--gpu", "0",
+                "--inference",
+                "--pccweights", "logs/weights/GRNet-KITTI.pth",
+                // "--pccweights", "None",
+                "--weights", "logs/DM-LRN|SPADE|efficientnet-b4|imagenet||(1.0*LogDepthL1Loss)|lr=0.0001/snapshots/snapshot_final.pth",
+                "--config_file", "configs/dm_lrn/DM-LRN_efficientnet-b4_pepper.yaml",
+                "--save_dir", "output/logs/pcc/"
+            ]
+        },
+    ]
+}

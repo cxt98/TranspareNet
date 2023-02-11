@@ -115,6 +115,8 @@ class DM_LRN(nn.Module):
 
     def postprocess(self, pred):
         if self.predict_log_depth:
+            # TODO: remove very large depth pred
+            pred[pred > 2] = 2
             return pred.exp()
 
         return pred

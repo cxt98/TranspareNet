@@ -485,7 +485,7 @@ class ClearPoseDataLoader(object):
             # collect transparent rgb, mask, depth paths
             cur_raw_depth_paths = sorted(glob.glob(os.path.join(path, '*-depth.png')) )
             cur_gt_depth_paths = [p.replace('-depth.png', '-depth_true.png') for p in cur_raw_depth_paths]
-            cur_mask_paths = [p.replace('-depth.png', '-label.png') for p in cur_raw_depth_paths]
+            cur_mask_paths = [p.replace('-depth.png', '-label.png') for p in cur_raw_depth_paths] # TODO: change to maskrcnn output path
 
             # raw_depth_files += cur_raw_depth_paths
             # gt_depth_files += cur_gt_depth_paths
